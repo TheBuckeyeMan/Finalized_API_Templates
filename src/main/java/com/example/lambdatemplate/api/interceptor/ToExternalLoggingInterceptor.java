@@ -28,6 +28,4 @@ public class ToExternalLoggingInterceptor implements ClientHttpRequestIntercepto
         log.info("Outbound Request Headers: {}", request.getHeaders()); //Authentication
         log.info("Outbound Request Body: {}", requestBody);
     }
-
-    
 }
