@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 @ComponentScan(basePackages = "com.example.lambdatemplate") //Since its lambda, we need to Manually tell spring to scan all required dependencies for injection
 public class LambdaConfig {
 
-    @Value("${api.key}")
+    @Value("${Api_Key}")
     private String apikey;
 
     @Bean
