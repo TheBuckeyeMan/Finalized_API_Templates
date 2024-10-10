@@ -1,5 +1,8 @@
 package com.example.lambdatemplate.service;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +30,7 @@ public class ExternalApiCall {
     public Object getFact() throws JsonMappingException, JsonProcessingException{
         String url = "<Your API URL>";
         Object result = null;
+        String fileName = "<Your file name here with extension>";
         try{
             String jsonResponse = restTemplate.getForObject(url, String.class); //This Actually Executes the API Call
             JsonNode jsonNode = objectMapper.readTree(jsonResponse); //Put the Response to an object for us to check if array or object
@@ -38,10 +42,22 @@ public class ExternalApiCall {
                 result = objectMapper.readValue(jsonResponse, Model.class);
                 log.info("Response is an Object: " + result);
                 log.info("Response Recieved from API: " + jsonResponse);
+            } else {
+                log.error("Response recieved from API is not a Json object, or Json List");
             }
+            saveToFile(result, fileName);
         } catch (HttpStatusCodeException e) {
             log.error("Recieved Error from API", e.getResponseBodyAsString(), e);
         }
         return result;
     } 
+    public void saveToFile(Object data, String fileName){
+        String fullPath = "/tmp/" + fileName;
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fullPath))){
+            writer.write(objectMapper.writeValueAsString(data));
+            log.info("File Successfuly Saved:" + fullPath);
+        } catch (IOException e){
+            log.error("Error while saving Json respons eot file", e);
+        }
+    }
 }
