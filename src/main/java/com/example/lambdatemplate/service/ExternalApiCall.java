@@ -22,15 +22,20 @@ public class ExternalApiCall {
     private final RestTemplate restTemplate;
     private static final Logger log = LoggerFactory.getLogger(ExternalApiCall.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final S3Service s3Service;
 
-    public ExternalApiCall(RestTemplate restTemplate){
+    public ExternalApiCall(RestTemplate restTemplate, S3Service s3Service){
         this.restTemplate = restTemplate;
+        this.s3Service = s3Service;
     }
 
     public Object getFact() throws JsonMappingException, JsonProcessingException{
         String url = "<Your API URL>";
         Object result = null;
         String fileName = "<Your file name here with extension>";
+        String bucketName = "<Your AWS S3 Bucket Here>"; //Add this as repo secret in the future
+        String s3Key = fileName;
+
         try{
             String jsonResponse = restTemplate.getForObject(url, String.class); //This Actually Executes the API Call
             JsonNode jsonNode = objectMapper.readTree(jsonResponse); //Put the Response to an object for us to check if array or object
@@ -45,7 +50,8 @@ public class ExternalApiCall {
             } else {
                 log.error("Response recieved from API is not a Json object, or Json List");
             }
-            saveToFile(result, fileName);
+            saveToFile(result, fileName);//Save to Temp Directory
+            s3Service.uploadFile(bucketName, s3Key, "/tmp/" + fileName); //Upload to S3
         } catch (HttpStatusCodeException e) {
             log.error("Recieved Error from API", e.getResponseBodyAsString(), e);
         }

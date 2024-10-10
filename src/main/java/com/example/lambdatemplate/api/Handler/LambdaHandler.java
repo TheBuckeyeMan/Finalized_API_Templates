@@ -25,6 +25,6 @@ public class LambdaHandler implements RequestHandler<Object, Object> {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        return "API Successfully Triggered - Success";
+        return "API Successfully Triggered! File Saved to S3 Bucket!";
     }
 }
