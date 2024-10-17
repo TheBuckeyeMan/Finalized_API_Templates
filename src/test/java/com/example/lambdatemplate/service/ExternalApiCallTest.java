@@ -42,11 +42,11 @@ public class ExternalApiCallTest {
     //Test a successful API Call
     @Test
     public void testGetFactReturnObject() throws Exception{
-        String jsonResponse = "<Mock what you expect the ful json response to be here>";
+        String jsonResponse = "[{\"fact\": \"Isaac Asimov is the only author to have a book in every Dewey-decimal category\"}]";
         when(restTemplate.getForObject(anyString(), eq(String.class))).thenReturn(jsonResponse);
         when(objectMapper.readTree(jsonResponse)).thenReturn(mock(JsonNode.class));
         when(objectMapper.readValue(anyString(), any(TypeReference.class)))
-            .thenReturn(Collections.singletonList(new Model("<Insert the test you expect it to return here>")));
+            .thenReturn(Collections.singletonList(new Model("Isaac Asimov is the only author to have a book in every Dewey-decimal category")));
             
         Object result = externalApiCall.getFact();
         assertNotNull(result);

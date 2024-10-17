@@ -30,10 +30,10 @@ public class ExternalApiCall {
     }
 
     public Object getFact() throws JsonMappingException, JsonProcessingException{
-        String url = "<Your API URL>";
+        String url = "https://api.api-ninjas.com/v1/facts";
         Object result = null;
-        String fileName = "<Your file name here with extension>";
-        String bucketName = "<Your AWS S3 Bucket Here>"; //Add this as repo secret in the future
+        String fileName = "fact.json";
+        String bucketName = "api-data-colection-s3-bucket-for-testing"; //Add this as repo secret in the future
         String s3Key = fileName;
 
         try{
