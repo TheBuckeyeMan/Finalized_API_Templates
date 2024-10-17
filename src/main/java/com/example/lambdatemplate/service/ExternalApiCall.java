@@ -30,7 +30,7 @@ public class ExternalApiCall {
     }
 
     public Object getFact() throws JsonMappingException, JsonProcessingException{
-        String url = "https://api.api-ninjas.com/v1/facts";
+        String url = "https://api.collegefootballdata.com/games?year=2024&week=1&seasonType=regular&team=ohio%20state";
         Object result = null;
         String fileName = "fact.json";
         String bucketName = "api-data-colection-s3-bucket-for-testing"; //Add this as repo secret in the future
