@@ -2,9 +2,12 @@ package com.example.lambdatemplate.service;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +51,21 @@ public class S3LoggingService {
         String fileName = "/tmp/log-file.txt";
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))){
             writer.write(updatedContent); //write theupdated content to the local file
+            writer.flush(); // Ensure content is flushed to the file
+
+            // Read and log the file contents to verify
+            String fileContent = Files.readString(Paths.get(fileName));
+            log.info("File content before uploading to S3: \n" + fileContent);
+
+            // Check file size after writing
+            File file = new File(fileName);
+            if (file.exists()) {
+                log.info("File size after writing: " + file.length() + " bytes");
+            } else {
+                log.error("File not found: " + fileName);
+            }
+
+
             s3Service.uploadFile(bucketName, logFileKey, fileName);
             log.info("Uploading log file to bucket: " + bucketName + " with key: " + logFileKey + "  by filename " + fileName);
             log.info("Log file successfuly uploaded to s3");
