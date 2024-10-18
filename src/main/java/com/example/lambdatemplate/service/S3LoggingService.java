@@ -49,7 +49,7 @@ public class S3LoggingService {
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))){
             writer.write(updatedContent); //write theupdated content to the local file
             s3Service.uploadFile(bucketName, logFileKey, fileName);
-            log.info("Uploading log file to bucket: " + bucketName + " with key: " + logFileKey + "by filename " + fileName);
+            log.info("Uploading log file to bucket: " + bucketName + " with key: " + logFileKey + "  by filename " + fileName);
             log.info("Log file successfuly uploaded to s3");
         } catch (IOException e) {
             log.error("Error while writing the log file to s3");
@@ -59,6 +59,10 @@ public class S3LoggingService {
     public void logMessageToS3(String message, String logFileKey){
         String bucketName = "logging-event-driven-bucket-1220-16492640";
         try{
+            log.info("Message being logged: '" + message + "'");
+            if (message == null || message.trim().isEmpty()) {
+                log.warn("The message is either null or empty!");
+            }
             String existingContent = downloadLogFilesFromS3(bucketName, logFileKey); //DOwnload the existing Log File content
             String updatedContent = appendLogEntry(existingContent, message); //Append tge new log message
             uploadLogFileToS3(bucketName, logFileKey, updatedContent);
