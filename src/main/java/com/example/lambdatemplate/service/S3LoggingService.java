@@ -45,9 +45,10 @@ public class S3LoggingService {
 
     //Upload the updated file to the s3 bucket
     public void uploadLogFileToS3(String bucketName, String logFileKey, String updatedContent){
-        try(BufferedWriter writer = new BufferedWriter(new FileWriter("/tmp/log-file.txt"))){
+        String fileName = "/tmp/log-file.txt";
+        try(BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))){
             writer.write(updatedContent); //write theupdated content to the local file
-            s3Service.uploadFile(bucketName, logFileKey, updatedContent);
+            s3Service.uploadFile(bucketName, logFileKey, fileName);
             log.info("Log file successfuly uploaded to s3");
         } catch (IOException e) {
             log.error("Error while writing the log file to s3");
