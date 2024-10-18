@@ -10,5 +10,5 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Model {
-    private String placeholder;
+    private String fact;
 }
