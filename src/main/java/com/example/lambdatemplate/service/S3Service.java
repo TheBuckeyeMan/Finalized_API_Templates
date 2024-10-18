@@ -34,5 +34,4 @@ public class S3Service {
             log.error("Error occured while uploading file to S3");
         }
     }
-
 }
