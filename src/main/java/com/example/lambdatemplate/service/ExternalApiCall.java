@@ -33,8 +33,8 @@ public class ExternalApiCall {
         String url = "https://api.api-ninjas.com/v1/facts";
         Object result = null;
         String fileName = "Fact.json";
-        String bucketName = "landing-data-bucket-1220-16492640/Testing/"; //Add this as repo secret in the future
-        String s3Key = fileName;
+        String bucketName = "landing-data-bucket-1220-16492640"; //Add this as repo secret in the future
+        String s3Key = "/Testing/" + fileName;
 
         try{
             String jsonResponse = restTemplate.getForObject(url, String.class); //This Actually Executes the API Call
