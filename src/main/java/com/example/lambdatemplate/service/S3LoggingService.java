@@ -49,6 +49,7 @@ public class S3LoggingService {
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))){
             writer.write(updatedContent); //write theupdated content to the local file
             s3Service.uploadFile(bucketName, logFileKey, fileName);
+            log.info("Uploading log file to bucket: " + bucketName + " with key: " + logFileKey + "by filename " + fileName);
             log.info("Log file successfuly uploaded to s3");
         } catch (IOException e) {
             log.error("Error while writing the log file to s3");
