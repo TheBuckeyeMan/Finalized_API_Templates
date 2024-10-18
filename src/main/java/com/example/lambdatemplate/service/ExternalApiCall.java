@@ -3,6 +3,7 @@ package com.example.lambdatemplate.service;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +24,12 @@ public class ExternalApiCall {
     private static final Logger log = LoggerFactory.getLogger(ExternalApiCall.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final S3Service s3Service;
+    private final S3LoggingService s3LoggingService;
 
-    public ExternalApiCall(RestTemplate restTemplate, S3Service s3Service){
+    public ExternalApiCall(RestTemplate restTemplate, S3Service s3Service, S3LoggingService s3LoggingService){
         this.restTemplate = restTemplate;
         this.s3Service = s3Service;
+        this.s3LoggingService = s3LoggingService;
     }
 
     public Object getFact() throws JsonMappingException, JsonProcessingException{
@@ -35,6 +38,7 @@ public class ExternalApiCall {
         String fileName = "Fact.json";
         String bucketName = "landing-data-bucket-1220-16492640"; //Add this as repo secret in the future
         String s3Key = "Testing/" + fileName;
+        String logFileKey = "Testing/Test.txt";
 
         try{
             String jsonResponse = restTemplate.getForObject(url, String.class); //This Actually Executes the API Call
@@ -52,11 +56,16 @@ public class ExternalApiCall {
             }
             saveToFile(result, fileName);//Save to Temp Directory
             s3Service.uploadFile(bucketName, s3Key, "/tmp/" + fileName); //Upload to S3
+            s3LoggingService.logMessageToS3("Success: Success occured at: " + LocalDateTime.now(), logFileKey);
+            
         } catch (HttpStatusCodeException e) {
             log.error("Recieved Error from API", e.getResponseBodyAsString(), e);
+            s3LoggingService.logMessageToS3("Error: Error occured at " + LocalDateTime.now() + " Due to error " + e.getMessage(), logFileKey);
+            return null;
         }
-        return result;
+        return result; //Stops the api from running more
     } 
+
     public void saveToFile(Object data, String fileName){
         String fullPath = "/tmp/" + fileName;
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fullPath))){
