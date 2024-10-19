@@ -3,6 +3,8 @@ package com.example.lambdatemplate.service;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +25,12 @@ public class ExternalApiCall {
     private static final Logger log = LoggerFactory.getLogger(ExternalApiCall.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final S3Service s3Service;
+    private final S3LoggingService s3LoggingService;
 
-    public ExternalApiCall(RestTemplate restTemplate, S3Service s3Service){
+    public ExternalApiCall(RestTemplate restTemplate, S3Service s3Service, S3LoggingService s3LoggingService){
         this.restTemplate = restTemplate;
         this.s3Service = s3Service;
+        this.s3LoggingService = s3LoggingService;
     }
 
     public Object getFact() throws JsonMappingException, JsonProcessingException{
@@ -34,7 +38,8 @@ public class ExternalApiCall {
         Object result = null;
         String fileName = "<Your file name here with extension>";
         String bucketName = "<Your AWS S3 Bucket Here>"; //Add this as repo secret in the future
-        String s3Key = "<Directory Path If Applicable>" + fileName;
+        String s3Key = "<Directory Path in S3 for Data Landing If Applicable>" + fileName;
+        String logFileKey = "<Directory in your Logging S3 Where the file is>/<Your Logging File>.<Logging File Extension>";
 
         try{
             String jsonResponse = restTemplate.getForObject(url, String.class); //This Actually Executes the API Call
@@ -52,8 +57,11 @@ public class ExternalApiCall {
             }
             saveToFile(result, fileName);//Save to Temp Directory
             s3Service.uploadFile(bucketName, s3Key, "/tmp/" + fileName); //Upload to S3
+            s3LoggingService.logMessageToS3("Succcess: Success occured at: " + LocalDateTime.now() + " On: <Your Service Name Here>", logFileKey);
         } catch (HttpStatusCodeException e) {
             log.error("Recieved Error from API", e.getResponseBodyAsString(), e);
+            s3LoggingService.logMessageToS3("Error: Error occured at: " + LocalDate.now() + " On: <Your Service Name Here>", logFileKey);
+            return null; //Exit the service if we get an error
         }
         return result;
     } 

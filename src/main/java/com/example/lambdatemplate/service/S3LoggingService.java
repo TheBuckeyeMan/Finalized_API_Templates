@@ -25,7 +25,7 @@ public class S3LoggingService {
     public S3LoggingService(S3Service s3Service){
         this.s3Service = s3Service;
     }
-    //DOwnload Existing S3 File
+    //Download Existing S3 File
     public String downloadLogFilesFromS3(String bucketName, String logFileKey){
         try{
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
@@ -41,20 +41,19 @@ public class S3LoggingService {
             return ""; // Return empty if log file not found
         }
     }
-    //Append new log entry
+    //Append new log entry to the existing log file
     public String appendLogEntry(String existingContent, String newLogEntry){
         return existingContent + "\n" + newLogEntry;
     }
 
-    //Upload the updated file to the s3 bucket
+    //Upload the updated logging file to the logging S3 bucket
     public void uploadLogFileToS3(String bucketName, String logFileKey, String updatedContent){
         String fileName = "/tmp/log-file.txt";
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))){
-            writer.write(updatedContent); //write theupdated content to the local file
+            writer.write(updatedContent); //Write the updated content to the local file
             writer.flush(); // Ensure content is flushed to the file
 
-            // Read and log the file contents to verify
-            String fileContent = Files.readString(Paths.get(fileName));
+            String fileContent = Files.readString(Paths.get(fileName)); // Read and log the file contents to verify
             log.info("File content before uploading to S3: \n" + fileContent);
 
             // Check file size after writing
@@ -73,13 +72,13 @@ public class S3LoggingService {
     }
     //Log message to s3(This method calls other steps)
     public void logMessageToS3(String message, String logFileKey){
-        String bucketName = "logging-event-driven-bucket-1220-16492640";
+        String bucketName = "<Your Logging Bucket Name>";
         try{
             log.info("Message being logged: '" + message + "'");
             if (message == null || message.trim().isEmpty()) {
                 log.warn("The message is either null or empty!");
             }
-            String existingContent = downloadLogFilesFromS3(bucketName, logFileKey); //DOwnload the existing Log File content
+            String existingContent = downloadLogFilesFromS3(bucketName, logFileKey); //Download the existing Log File content
             String updatedContent = appendLogEntry(existingContent, message); //Append tge new log message
             uploadLogFileToS3(bucketName, logFileKey, updatedContent);
     } catch (Exception e){
