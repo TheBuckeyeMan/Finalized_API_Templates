@@ -34,7 +34,7 @@ public class ExternalApiCall {
         Object result = null;
         String fileName = "<Your file name here with extension>";
         String bucketName = "<Your AWS S3 Bucket Here>"; //Add this as repo secret in the future
-        String s3Key = fileName;
+        String s3Key = "<Directory Path If Applicable>" + fileName;
 
         try{
             String jsonResponse = restTemplate.getForObject(url, String.class); //This Actually Executes the API Call
