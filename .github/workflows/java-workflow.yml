@@ -59,7 +59,7 @@ jobs:
         run: |
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/youtube-containers:deleteapi
 
-      - name: Trigger Workflow in Another Repository
+      - name: Deploying Resources...
         env:
           CICD_GH_TOKEN: ${{ secrets.CICD_GH_TOKEN }}
         run: |
@@ -67,6 +67,10 @@ jobs:
           repo_name="Finalized_API_IAC"
           event_type="trigger-workflow"
           branch="delete"
+
+          curl -H "Authorization: token ${{ secrets.CICD_GH_TOKEN }}" https://api.github.com/repos/TheBuckeyeMan/Finalized_API_IAC
+
+          echo "Sending repository_dispatch to $repo_owner/$repo_name on branch $branch"
 
           curl -L \
             -X POST \
