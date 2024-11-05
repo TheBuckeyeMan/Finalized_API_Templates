@@ -34,12 +34,12 @@ public class ExternalApiCall {
     }
 
     public Object getFact() throws JsonMappingException, JsonProcessingException{
-        String url = "<Your API URL>";
+        String url = "https://api.api-ninjas.com/v1/facts";
         Object result = null;
-        String fileName = "<Your file name here with extension>";
-        String bucketName = "<Your AWS S3 Bucket Here>"; //Add this as repo secret in the future
-        String s3Key = "<Directory Path in S3 for Data Landing If Applicable>" + fileName;
-        String logFileKey = "<Directory in your Logging S3 Where the file is>/<Your Logging File>.<Logging File Extension>";
+        String fileName = "Fact.json";
+        String bucketName = "landing-data-bucket-1220-16492640"; //Add this as repo secret in the future
+        String s3Key = "Testing/" + fileName;
+        String logFileKey = "Testing/Fact.json";
 
         try{
             String jsonResponse = restTemplate.getForObject(url, String.class); //This Actually Executes the API Call
@@ -57,10 +57,10 @@ public class ExternalApiCall {
             }
             saveToFile(result, fileName);//Save to Temp Directory
             s3Service.uploadFile(bucketName, s3Key, "/tmp/" + fileName); //Upload to S3
-            s3LoggingService.logMessageToS3("Succcess: Success occured at: " + LocalDateTime.now() + " On: <Your Service Name Here>" + ",", logFileKey);
+            s3LoggingService.logMessageToS3("Succcess: Success occured at: " + LocalDateTime.now() + " On: Fact Service" + ",", logFileKey);
         } catch (HttpStatusCodeException e) {
             log.error("Recieved Error from API", e.getResponseBodyAsString(), e);
-            s3LoggingService.logMessageToS3("Error: Error occured at: " + LocalDate.now() + " On: <Your Service Name Here>" + ",", logFileKey);
+            s3LoggingService.logMessageToS3("Error: Error occured at: " + LocalDate.now() + " On: Fact Service" + ",", logFileKey);
             return null; //Exit the service if we get an error
         }
         return result;

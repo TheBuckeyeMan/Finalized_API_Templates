@@ -72,7 +72,7 @@ public class S3LoggingService {
     }
     //Log message to s3(This method calls other steps)
     public void logMessageToS3(String message, String logFileKey){
-        String bucketName = "<Your Logging Bucket Name>";
+        String bucketName = "logging-event-driven-bucket-1220-16492640";
         try{
             log.info("Message being logged: '" + message + "'");
             if (message == null || message.trim().isEmpty()) {
