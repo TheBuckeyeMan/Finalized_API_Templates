@@ -58,3 +58,13 @@ jobs:
       - name: Pushing Docker Image to ECR...
         run: |
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/youtube-containers:deleteapi
+
+      - name: Deploying Resources...
+        env: 
+          CICD_GH_TOKEN: ${{ secrets.CICD_GH_TOKEN }}
+        run: |
+          curl -X POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: toekn $CICD_GH_TOKEN" \
+          https://api.github.com/repos/TheBuckeyeMan/Finalized_API_IAC/dispatches \
+          -d '{"event_type": "trigger_workflow", "client_payload": {"branch": "delete"}}'
