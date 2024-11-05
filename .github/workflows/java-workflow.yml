@@ -81,3 +81,4 @@ jobs:
             -d "{\"event_type\": \"$event_type\"}"
             
         # -d "{\"event_type\": \"$event_type\", \"client_payload\": {\"branch\": \"$branch\"}}"
+        
